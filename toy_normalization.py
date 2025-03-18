@@ -2,6 +2,11 @@ import torch
 from torch import nn
 # retireved from llama 3 source code 
 # https://github.com/meta-llama/llama3/blob/main/llama/model.py
+# We use RMSNorm more currently due to its computational efficiency and stability
+# - RMSNorm skips mean subtraction, only computing the RMS value, which is much cheaper.
+# - Transformers are sensitive to LayerNorm because the mean subtraction step introduces zero-centered activations, which can cause instabilities in deep models.
+# - RMSNorm treats each feature independently and only rescales values, allowing more flexibility for learning representations.
+# - RMSNorm does not depend on batch statistics, making it a better choice for small-batch inference and fine-tuning.
 
 class RMSNorm(torch.nn.Module):
     def __init__(self, dim: int, eps: float = 1e-6):
